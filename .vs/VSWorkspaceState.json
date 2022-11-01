@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\kalendar",
+    "\\kalendar\\obj",
+    "\\kalendar\\Views"
   ],
-  "SelectedNode": "\\C:\\Users\\Matej\\Source\\Repos\\kalenderBCSH2",
+  "SelectedNode": "\\kalendar\\Models",
   "PreviewInSolutionExplorer": false
 }
