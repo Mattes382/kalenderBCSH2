@@ -17,11 +17,6 @@ namespace kalendar.Controllers
 
         public IActionResult Index()
         {
-            var client = new MongoClient("mongodb+srv://Mattes382:Kocourek123@cluster0.qvkqusl.mongodb.net/?retryWrites=true&w=majority");
-            var database = client.GetDatabase("kalendar");
-            var collectionUdalosti = database.GetCollection<BsonDocument>("udalosti");
-
-
 
             return View();
         }

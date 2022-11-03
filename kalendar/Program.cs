@@ -1,9 +1,21 @@
+using kalendar.Services;
+using MongoDB.Driver;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddSingleton<IMongoClient, MongoClient>(s =>
+{
+    var uri = s.GetRequiredService<IConfiguration>()["MongoUri"];
+    return new MongoClient(uri);
+});
+builder.Services.AddSingleton<UdalostiService>();
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
