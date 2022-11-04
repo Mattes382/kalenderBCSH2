@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace kalendar
+namespace kalendar.Models
 {
     public class Udalost
     {
@@ -12,7 +12,7 @@ namespace kalendar
         public string Nazev { get; set; }
 
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
-        public DateTime Datum  { get; set; }
+        public DateTime Datum { get; set; }
 
     }
 }

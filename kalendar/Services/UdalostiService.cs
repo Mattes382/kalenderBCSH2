@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using kalendar.Models;
+using MongoDB.Driver;
 
 namespace kalendar.Services
 {
@@ -14,7 +15,7 @@ namespace kalendar.Services
 
 
         public async Task<List<Udalost>> GetAsync() =>
-            await _udalostiCollection.Find(_ => true).ToListAsync();
+            await _udalostiCollection.Find(x => true).ToListAsync();
 
         public async Task<Udalost?> GetAsync(string id) =>
             await _udalostiCollection.Find(x => x.Id == id).FirstOrDefaultAsync();

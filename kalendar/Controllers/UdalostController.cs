@@ -1,4 +1,5 @@
-﻿using kalendar.Services;
+﻿using kalendar.Models;
+using kalendar.Services;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -44,7 +45,7 @@ namespace kalendar.Controllers
 
         // POST api/<KalendarController>
         [HttpPost]
-        public async Task<IActionResult> Post(Udalost udalost)
+        public async Task<IActionResult> Post([FromForm] Udalost udalost)
         {
             await _udalostService.CreateAsync(udalost);
 
