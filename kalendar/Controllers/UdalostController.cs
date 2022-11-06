@@ -45,7 +45,7 @@ namespace kalendar.Controllers
 
         // POST api/<KalendarController>
         [HttpPost]
-        public async Task<IActionResult> Post([FromForm] Udalost udalost)
+        public async Task<IActionResult> Post(/*[FromForm]*/ Udalost udalost)
         {
             await _udalostService.CreateAsync(udalost);
 

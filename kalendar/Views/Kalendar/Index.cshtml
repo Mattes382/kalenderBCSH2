@@ -8,20 +8,8 @@
   <div class="row">
     <div class="col-4">
       <div class="text-center">
-        <form asp-controller="Udalost" asp-action="Post">
-        <fieldset class="idea-form">
-            <h2>Přidat událost</h2>
-        <div class="form-group row">
-            <input type="text" name="nazev" asp-for="Nazev">
-            </div>
-            <div class="form-group row">
-            <input type="datetime-local" name="datum" asp-for="Datum">
-            </div>
-            <div class="form-group row">
-            <input type="submit" name="Create" />
-            </div>
-        </fieldset>
-        </form>
+            <h2>Události</h2>
+            <div id="kocourek"></div>
     </div>
     </div>
     <div class="col-8">
@@ -64,16 +52,31 @@
                             start: moment(v.datum),
                             end: v.datum != null ? moment(v.datum) : null,
                         });
+                        var d = new Date(v.datum);
+                        d = d.toUTCString();
+                        var n = document.createElement("h4"); 
+                        n.innerHTML = v.nazev;
+                        var dat = document.createElement("p"); 
+                        dat.innerHTML = d;
+                        var div = document.createElement("div"); 
+                        div.className = 'udalost';
+                        var documentFragment = document.createDocumentFragment();
+                        documentFragment.appendChild(div);
+                        div.appendChild(n);
+                        div.appendChild(dat);
+                        $("#kocourek").append(div);
+                       /* $("#kocourek").append(JSON.stringify(v.nazev));
+                        $("#kocourek").append(JSON.stringify(v.datum));*/
                     })
-
-                    GenerateCalender(events);
+                    
+                    GenerateCalendar(events);
                 },
                 error: function (error) {
                     alert('failed');
                 }
             })
 
-            function GenerateCalender(events) {
+            function GenerateCalendar(events) {
                 $('#calender').fullCalendar('destroy');
                 $('#calender').fullCalendar({
                     contentHeight: 500,
