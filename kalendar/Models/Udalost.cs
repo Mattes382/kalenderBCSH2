@@ -11,8 +11,13 @@ namespace kalendar.Models
 
         public string Nazev { get; set; }
 
+        public string? Popis { get; set; }
+
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
-        public DateTime Datum { get; set; }
+        public DateTime DatumOd { get; set; }
+
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
+        public DateTime? DatumDo { get; set; }
 
     }
 }

@@ -8,9 +8,13 @@
   <div class="row">
     <div class="col-4">
       <div class="text-center">
-            <h2>Události</h2>
+            <ul class="list-group list-group-horizontal d-inline-flex mb-5">
+              <li class="list-group-item">Události</li>
+              <li class="list-group-item">Upomínky</li>
+              <li class="list-group-item">Poznámky</li>
+            </ul>
             <div id="kocourek"></div>
-    </div>
+      </div>
     </div>
     <div class="col-8">
       <div id="calender"></div>
@@ -19,21 +23,23 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+               
                 <h4 class="modal-title"><span id="eventTitle"></span></h4>
             </div>
             <div class="modal-body">
                 <p id="pDetails"></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" id="closemodal" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+</div>
 
 <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css" rel="stylesheet" />
 <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.css" rel="stylesheet" media="print"/>
+
 
 @section Scripts{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
@@ -49,11 +55,10 @@
                     $.each(data, function (i, v) {
                         events.push({
                             title: v.nazev,
-                            start: moment(v.datum),
-                            end: v.datum != null ? moment(v.datum) : null,
+                            start: v.datum,
                         });
                         var d = new Date(v.datum);
-                        d = d.toUTCString();
+                        d = d.toLocaleString();
                         var n = document.createElement("h4"); 
                         n.innerHTML = v.nazev;
                         var dat = document.createElement("p"); 
@@ -65,8 +70,6 @@
                         div.appendChild(n);
                         div.appendChild(dat);
                         $("#kocourek").append(div);
-                       /* $("#kocourek").append(JSON.stringify(v.nazev));
-                        $("#kocourek").append(JSON.stringify(v.datum));*/
                     })
                     
                     GenerateCalendar(events);
@@ -76,12 +79,18 @@
                 }
             })
 
+            $('#closemodal').click(function() {
+                $('#myModal').modal('hide');
+            });
+
             function GenerateCalendar(events) {
                 $('#calender').fullCalendar('destroy');
                 $('#calender').fullCalendar({
+                    timeZone: 'UTC',
                     contentHeight: 500,
                     defaultDate: new Date(),
-                    timeFormat: 'h(:mm)a',
+                    timeZone: 'local',
+                    timeFormat: 'H:mm',
                     header: {
                         left: 'prev,next today',
                         center: 'title',
@@ -90,17 +99,15 @@
                     eventLimit: true,
                     eventColor: '#378006',
                     events: events,
-                    eventClick: function (calEvent, jsEvent, view) {                       
-                        $('#myModal #eventTitle').text(calEvent.title);
+                    eventClick: function (calEvent, jsEvent, view) {   
+                        $('#eventTitle').text(calEvent.title);
                         var $description = $('<div/>');
                         $description.append($('<p/>').html('<b>Start:</b>' + calEvent.start.format("DD-MMM-YYYY HH:mm a")));
-                        if (calEvent.end != null) {
-                            $description.append($('<p/>').html('<b>End:</b>' + calEvent.end.format("DD-MMM-YYYY HH:mm a")));
-                        }
-                        $description.append($('<p/>').html('<b>Description:</b>' + calEvent.description));
+                        //$description.append($('<p/>').html('<b>Description:</b>' + calEvent.popisek));
                         $('#myModal #pDetails').empty().html($description);
 
-                        $('#myModal').modal();
+                        //close button ma fungovat
+                        $('#myModal').modal('show');
                     }
                 })
             }
