@@ -8,10 +8,10 @@
   <div class="row">
     <div class="col-4">
       <div class="text-center">
-            <ul class="list-group list-group-horizontal d-inline-flex mb-5">
-              <li class="list-group-item">Události</li>
-              <li class="list-group-item">Upomínky</li>
-              <li class="list-group-item">Poznámky</li>
+            <ul class="list-group list-group-horizontal w-100 mb-5">
+              <li class="list-group-item flex-fill">Události</li>
+              <li class="list-group-item flex-fill">Upomínky</li>
+              <li class="list-group-item flex-fill">Poznámky</li>
             </ul>
             <div id="kocourek"></div>
       </div>
@@ -55,20 +55,45 @@
                     $.each(data, function (i, v) {
                         events.push({
                             title: v.nazev,
-                            start: v.datum,
+                            description: v.popis,
+                            start: v.datumOd,
+                            end: v.datumDo,
+                            color: "green"
                         });
-                        var d = new Date(v.datum);
+                        var d = new Date(v.datumOd);
                         d = d.toLocaleString();
+                        if (v.datumDo !== null) {
+                            var d2 = new Date(v.datumDo);
+                            d2 = d2.toLocaleString();
+                        }
+
                         var n = document.createElement("h4"); 
                         n.innerHTML = v.nazev;
-                        var dat = document.createElement("p"); 
-                        dat.innerHTML = d;
+                        var popis = document.createElement("p"); 
+                        popis.innerHTML = v.popis;
+
+                        var dat = document.createElement("h6");
+                        if (v.datumDo !== null) {
+                            
+                            dat.innerHTML = "Od: " + d;
+                            var dat2 = document.createElement("h6");
+                            dat2.innerHTML = "Do: " + d2;
+                        } else {
+                            dat.innerHTML = d;
+
+                        }
+
+
                         var div = document.createElement("div"); 
                         div.className = 'udalost';
                         var documentFragment = document.createDocumentFragment();
                         documentFragment.appendChild(div);
                         div.appendChild(n);
+                        div.appendChild(popis);
                         div.appendChild(dat);
+                        if (v.datumDo !== null) {
+                            div.appendChild(dat2);
+                        }
                         $("#kocourek").append(div);
                     })
                     
@@ -86,6 +111,10 @@
             function GenerateCalendar(events) {
                 $('#calender').fullCalendar('destroy');
                 $('#calender').fullCalendar({
+                    monthNames: ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'],
+                    monthNamesShort: ['Led','Únor','Břez','Dub','Květ','Červen','Červenec','Srp','Zář','Říj','List','Pros'],
+                    dayNames: ['Pondělí','Úterý','Středa','Čtvrtek','Pátek','Sobota','Neděle'],
+                    dayNamesShort: ['Po','Út','St','Čt','Pá','So','Ne'],
                     timeZone: 'UTC',
                     contentHeight: 500,
                     defaultDate: new Date(),
