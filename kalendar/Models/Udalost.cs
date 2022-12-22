@@ -14,10 +14,10 @@ namespace kalendar.Models
         public string? Popis { get; set; }
 
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
-        public DateTime DatumOd { get; set; }
+        public DateTime datumodudalost { get; set; }
 
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
-        public DateTime? DatumDo { get; set; }
+        public DateTime? datumdoudalost { get; set; }
 
     }
 }

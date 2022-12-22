@@ -9,37 +9,97 @@
     <div class="col-4">
       <div class="text-center">
             <ul class="list-group list-group-horizontal w-100 mb-5">
-              <li class="list-group-item flex-fill">Události</li>
-              <li class="list-group-item flex-fill">Upomínky</li>
-              <li class="list-group-item flex-fill">Poznámky</li>
+              <li id="udalostButton" class="list-group-item active flex-fill">Události</li>
+              <li id="upominkaButton" class="list-group-item flex-fill">Upomínky</li>
+              <li id="poznamkaButton" class="list-group-item flex-fill">Poznámky</li>
             </ul>
-            <div id="kocourek"></div>
+            
+      </div>
+      <div class="text-center" style="overflow-y: scroll;
+max-height: 490px; ">
+          <div id="kocourek"></div>
       </div>
     </div>
     <div class="col-8">
       <div id="calender"></div>
 
-<div id="myModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-               
-                <h4 class="modal-title"><span id="eventTitle"></span></h4>
-            </div>
-            <div class="modal-body">
-                <p id="pDetails"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="closemodal" class="btn btn-default" data-dismiss="modal">Close</button>
+    <div id="myModalUdalost" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="eventTitle"></span></h4>
+                </div>
+                <div class="modal-body">
+                   <form id="udalostformupdate"> 
+                    <div class="form-group">
+                       <label for="nazevudalostiupdate">Název Události</label>
+                       <input type="text" class="form-control" name="nazevudalostiupdate" id="nazevudalostiupdate" />
+                    </div>
+                    <div class="form-group">
+                        <label for="popisudalostiupdate">Popis události</label>
+                        <textarea name="popisudalostiupdate" class="form-control" id="popisudalostiupdate"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="datumodudalostupdateudalost">Datum od</label>
+                        <input type="datetime-local" name="datumodudalostupdateudalost" class="form-control" id="datumodudalostupdateudalost">
+                    </div>
+                    <div class="form-group">
+                        <label for="datumdoudalostupdateudalost">Datum do</label>
+                        <input type="datetime-local" name="datumdoudalostupdateudalost" class="form-control" id="datumdoudalostupdateudalost">
+                    </div>
+                    </form>
+                
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="editbutton" class="btn btn-primary" data-dismiss="modal">Upravit</button>
+                    <button type="button" id="deletebutton" class="btn btn-danger" data-dismiss="modal">Smazat</button>
+                    <button type="button" id="closemodal" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <div id="myModalUdalostCreate" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="eventTitleCreate"></span></h4>
+                </div>
+                
+                <div class="modal-body">  
+                    <form id="udalostform"> 
+                    <div class="form-group">
+                       <label for="nazevudalosti">Název události</label>
+                       <input type="text" class="form-control" name="nazevudalosti" id="nazevudalosti" />
+                    </div>
+                    <div class="form-group">
+                        <label for="popisudalosti">Popis události</label>
+                        <textarea name="popisudalosti" class="form-control" id="popisudalosti"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="datumodudalost">Datum od</label>
+                        <input type="datetime-local" name="datumodudalost" class="form-control" id="datumodudalost">
+                    </div>
+                    <div class="form-group">
+                        <label for="datumdoudalost">Datum do</label>
+                        <input type="datetime-local" name="datumdoudalost" class="form-control" id="datumdoudalost">
+                    </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="createbutton" class="btn btn-primary" data-dismiss="modal">Vytvořit</button>
+                    <button type="button" id="closemodalcreate" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+
+
 </div>
 
 <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css" rel="stylesheet" />
 <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.css" rel="stylesheet" media="print"/>
-
 
 @section Scripts{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
@@ -47,8 +107,19 @@
 
     <script>
         $(document).ready(function () {
+
             var events = [];
-            $.ajax({
+            var currEvent = null;
+            const typeOfEvent = {
+	            Udalost : Symbol("udalost"),
+	            Poznamka: Symbol("poznamka"),
+	            Upominka: Symbol("upominka")
+            }
+            var currType = typeOfEvent.Udalost;
+
+            function fetchData() {
+                events = [];
+                $.ajax({
                 type: "GET",
                 url: "/api/udalost",
                 success: function (data) {
@@ -56,14 +127,15 @@
                         events.push({
                             title: v.nazev,
                             description: v.popis,
-                            start: v.datumOd,
-                            end: v.datumDo,
-                            color: "green"
+                            start: v.datumodudalost,
+                            end: v.datumdoudalost,
+                            color: "green",
+                            id: v.id
                         });
-                        var d = new Date(v.datumOd);
+                        var d = new Date(v.datumodudalost);
                         d = d.toLocaleString();
-                        if (v.datumDo !== null) {
-                            var d2 = new Date(v.datumDo);
+                        if (v.datumdoudalost !== null) {
+                            var d2 = new Date(v.datumdoudalost);
                             d2 = d2.toLocaleString();
                         }
 
@@ -73,7 +145,7 @@
                         popis.innerHTML = v.popis;
 
                         var dat = document.createElement("h6");
-                        if (v.datumDo !== null) {
+                        if (v.datumdoudalost !== null) {
                             
                             dat.innerHTML = "Od: " + d;
                             var dat2 = document.createElement("h6");
@@ -86,27 +158,141 @@
 
                         var div = document.createElement("div"); 
                         div.className = 'udalost';
+                        div.id = v.id;
                         var documentFragment = document.createDocumentFragment();
                         documentFragment.appendChild(div);
                         div.appendChild(n);
                         div.appendChild(popis);
                         div.appendChild(dat);
-                        if (v.datumDo !== null) {
+                        if (v.datumdoudalost !== null) {
                             div.appendChild(dat2);
                         }
                         $("#kocourek").append(div);
                     })
-                    
                     GenerateCalendar(events);
+                    
                 },
                 error: function (error) {
                     alert('failed');
                 }
-            })
+               })
+            }
+            fetchData();
+
+            $('.list-group').on('click','> li', function(e) {
+               var $this = $(this);
+                $('.list-group').find('.active').removeClass('active');
+                $this.addClass('active');
+                $('#kocourek').empty();
+                switch (e.currentTarget.id) {
+                    case 'udalostButton': currType = typeOfEvent.Udalost;
+                        break;
+                    case 'poznamkaButton': currType = typeOfEvent.Poznamka;
+                        break;
+                    case 'upominkaButton': currType = typeOfEvent.Upominka;
+                        break;
+                }
+                alert(currType);
+                
+            });
+
+            $('.list-group').hover(function() {
+                $(this).css('cursor','pointer');
+            });
+            
 
             $('#closemodal').click(function() {
-                $('#myModal').modal('hide');
+                $('#myModalUdalost').modal('hide');
+                currEvent = null;
             });
+            $('#closemodalcreate').click(function() {
+                $('#myModalUdalostCreate').modal('hide');
+            });
+
+            $(document).on('click', ".udalost", function(event){
+                currEvent = event.currentTarget.id;
+                var udalost = events.find(({id}) => id == currEvent);
+                $('input[name="nazevudalostiupdate"]').val(udalost.title);
+                $('textarea[name="popisudalostiupdate"]').val(udalost.description);
+                $('input[name="datumodudalostupdateudalost"]').val(moment(udalost.start).format('YYYY-MM-DD HH:mm'));
+                $('input[name="datumdoudalostupdateudalost"]').val(moment(udalost.end).format('YYYY-MM-DD HH:mm'));  
+                $('#myModalUdalost').modal('show');
+            });
+
+        $("#editbutton").click(function (e) {   
+            var udalost = JSON.stringify({
+                'Nazev': $('input[name="nazevudalostiupdate"]').val(),
+                'Popis': $('textarea[name="popisudalostiupdate"]').val(),
+                'datumodudalost': $('input[name="datumodudalostupdateudalost"]').val(),
+                'datumdoudalost': $('input[name="datumdoudalostupdateudalost"]').val()    
+            });
+ 
+            $.ajax({   
+                url: "/api/udalost/" + currEvent,   
+                type: "PUT", 
+                contentType: 'application/json',   
+                data: udalost,
+                success: function (data, textStatus, xhr) {
+                    $('#kocourek').empty();
+                    $('#myModalUdalost').modal('hide');
+                    $('#calender').fullCalendar({ 
+                        events: [] 
+                    })
+                   fetchData();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                   console.log('Error in Operation');
+                }
+            });   
+        }); 
+
+        $("#createbutton").click(function (e) {   
+            var udalost = JSON.stringify({
+                'Nazev': $('input[name="nazevudalosti"]').val(),
+                'Popis': $('textarea[name="popisudalosti"]').val(),
+                'datumodudalost': $('input[name="datumodudalost"]').val(),
+                'datumdoudalost': $('input[name="datumdoudalost"]').val()    
+            });
+ 
+            $.ajax({   
+                url: "/api/udalost",   
+                type: "POST", 
+                contentType: 'application/json',   
+                data: udalost,
+                success: function (data, textStatus, xhr) {
+                    $('#kocourek').empty();
+                    $('#myModalUdalostCreate').modal('hide');
+                    $('#calender').fullCalendar({ 
+                        events: [] 
+                    })
+                   fetchData();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                   console.log('Error in Operation');
+                }
+            });   
+        }); 
+
+        $("#deletebutton").click(function (e) {   
+            $.ajax({   
+                url: "/api/udalost/" + currEvent,   
+                type: "DELETE", 
+                contentType: 'application/json',   
+                data: currEvent,
+                success: function (data, textStatus, xhr) {
+                    $('#kocourek').empty();
+                    $('#myModalUdalost').modal('hide');
+                    $('#calender').fullCalendar({ 
+                        events: [] 
+                    })
+                   fetchData();
+                   
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                   console.log('Error in Operation');
+                }
+            });   
+        }); 
 
             function GenerateCalendar(events) {
                 $('#calender').fullCalendar('destroy');
@@ -128,15 +314,48 @@
                     eventLimit: true,
                     eventColor: '#378006',
                     events: events,
-                    eventClick: function (calEvent, jsEvent, view) {   
-                        $('#eventTitle').text(calEvent.title);
+                    eventClick: function (calEvent, jsEvent, view) {  
+                        /*
+                        switch (currType) {
+                            case typeOfEvent.Udalost: alert('udalost');
+                                break;
+                            case typeOfEvent.Poznamka: alert('poznamka');
+                                break;
+                            case typeOfEvent.Upominka: alert('upominka');
+                                break;
+                        }*/
+
+                        $('#eventTitle').text("Upravit událost pro datum " + calEvent.start.format("DD.MM.YYYY") + " - " + calEvent.end.format("DD.MM.YYYY"));
+                        $('input[name="nazevudalostiupdate"]').val(calEvent.title);
+                        $('textarea[name="popisudalostiupdate"]').val(calEvent.description);
+                        $('input[name="datumodudalostupdateudalost"]').val(moment(calEvent.start).format('YYYY-MM-DD HH:MM'));
+                        $('input[name="datumdoudalostupdateudalost"]').val(moment(calEvent.end).format('YYYY-MM-DD HH:MM'));  
+                        currEvent = calEvent.id;
+                        //close button ma fungovat
+                        $('#myModalUdalost').modal('show');
+                    },
+                    dayClick: function(date, jsEvent, view) {
+                        /*
+                        switch (currType) {
+                            case typeOfEvent.Udalost: alert('udalost');
+                                break;
+                            case typeOfEvent.Poznamka: alert('poznamka');
+                                break;
+                            case typeOfEvent.Upominka: alert('upominka');
+                                break;
+                        }
+                        */
+                        $('input[name="datumodudalost"]').val(moment(date).format('YYYY-MM-DD 00:00'));
+                        $('input[name="datumdoudalost"]').val(moment(date).format('YYYY-MM-DD 23:59'));
+                        $('#eventTitleCreate').text("Vytvořit novou událost pro datum " + date.format("DD.MM.YYYY"));
                         var $description = $('<div/>');
-                        $description.append($('<p/>').html('<b>Start:</b>' + calEvent.start.format("DD-MMM-YYYY HH:mm a")));
+                        $description.append($('<p/>').html('<b>Start:</b>' + date.format("DD-MMM-YYYY HH:mm a")));
                         //$description.append($('<p/>').html('<b>Description:</b>' + calEvent.popisek));
-                        $('#myModal #pDetails').empty().html($description);
+                        $('#myModalUdalostCreate #pDetailsCreate').empty().html($description);
 
                         //close button ma fungovat
-                        $('#myModal').modal('show');
+                        $('#myModalUdalostCreate').modal('show');
+
                     }
                 })
             }
