@@ -5,28 +5,28 @@ namespace kalendar.Services
 {
     public class UpominkyService
     {
-        private readonly IMongoCollection<Upominka> _udalostiCollection;
+        private readonly IMongoCollection<Upominka> _upominkyCollection;
 
         public UpominkyService(IMongoClient client)
         {
             var database = client.GetDatabase("kalendar");
-            _udalostiCollection = database.GetCollection<Upominka>("upominky");
+            _upominkyCollection = database.GetCollection<Upominka>("upominky");
         }
 
 
         public async Task<List<Upominka>> GetAsync() =>
-            await _udalostiCollection.Find(x => true).ToListAsync();
+            await _upominkyCollection.Find(x => true).ToListAsync();
 
         public async Task<Upominka?> GetAsync(string id) =>
-            await _udalostiCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+            await _upominkyCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
         public async Task CreateAsync(Upominka newUpominka) =>
-            await _udalostiCollection.InsertOneAsync(newUpominka);
+            await _upominkyCollection.InsertOneAsync(newUpominka);
 
         public async Task UpdateAsync(string id, Upominka updatedUpominka) =>
-            await _udalostiCollection.ReplaceOneAsync(x => x.Id == id, updatedUpominka);
+            await _upominkyCollection.ReplaceOneAsync(x => x.Id == id, updatedUpominka);
 
         public async Task RemoveAsync(string id) =>
-            await _udalostiCollection.DeleteOneAsync(x => x.Id == id);
+            await _upominkyCollection.DeleteOneAsync(x => x.Id == id);
     }
 }

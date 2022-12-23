@@ -12,6 +12,8 @@ builder.Services.AddSingleton<IMongoClient, MongoClient>(s =>
     return new MongoClient(uri);
 });
 builder.Services.AddSingleton<UdalostiService>();
+builder.Services.AddSingleton<PoznamkyService>();
+builder.Services.AddSingleton<UpominkyService>();
 
 var app = builder.Build();
 

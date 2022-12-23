@@ -12,6 +12,6 @@ namespace kalendar.Models
         public string TextPoznamky { get; set; }
 
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
-        public DateOnly Datum { get; set; }
+        public DateTime Datum { get; set; }
     }
 }
