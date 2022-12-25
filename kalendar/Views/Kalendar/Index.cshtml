@@ -111,7 +111,7 @@ max-height: 490px; ">
                        <textarea class="form-control" name="textpoznamkyupdate" id="textpoznamkyupdate"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="datumpoznamkaupdate">Datum do</label>
+                        <label for="datumpoznamkaupdate">Datum</label>
                         <input type="datetime-local" name="datumpoznamkaupdate" class="form-control" id="datumpoznamkaupdate">
                     </div>
                     </form>
@@ -135,11 +135,11 @@ max-height: 490px; ">
                 <div class="modal-body">  
                     <form id="poznamkaform"> 
                     <div class="form-group">
-                       <label for="textpoznamkyupdate">Text poznámky</label>
-                       <textarea class="form-control" name="textpoznamkyupdate" id="textpoznamkyupdate"></textarea>
+                       <label for="textpoznamky">Text poznámky</label>
+                       <textarea class="form-control" name="textpoznamky" id="textpoznamky"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="datumpoznamka">Datum do</label>
+                        <label for="datumpoznamka">Datum</label>
                         <input type="datetime-local" name="datumpoznamka" class="form-control" id="datumpoznamka">
                     </div>
                     </form>
@@ -147,6 +147,71 @@ max-height: 490px; ">
                 <div class="modal-footer">
                     <button type="button" id="createbuttonpoznamka" class="btn btn-primary" data-dismiss="modal">Vytvořit</button>
                     <button type="button" id="closemodalcreatepoznamka" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+          <!-- upominka -->
+
+    <div id="myModalUpominka" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="eventTitleUpominka"></span></h4>
+                </div>
+                <div class="modal-body">
+                   <form id="upominkaformupdate"> 
+                    <div class="form-group">
+                       <label for="nazevupominkyupdate">Název upomínky</label>
+                       <input type="text" class="form-control" name="nazevupominkyupdate" id="nazevupominkyupdate"/>
+                    </div>
+                    <div class="form-group">
+                       <label for="dulezitostupominkyupdate">Důležitost</label>
+                       <input type="number" min="10" max="100" class="form-control" name="dulezitostupominkyupdate" id="dulezitostupominkyupdate"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="datumupominkaupdate">Datum</label>
+                        <input type="datetime-local" name="datumupominkaupdate" class="form-control" id="datumupominkaupdate">
+                    </div>
+                    </form>
+                
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="editbuttonupominka" class="btn btn-primary" data-dismiss="modal">Upravit</button>
+                    <button type="button" id="deletebuttonupominka" class="btn btn-danger" data-dismiss="modal">Smazat</button>
+                    <button type="button" id="closemodalupominka" class="btn btn-default" data-dismiss="modal">Zavřít</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="myModalUpominkaCreate" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="eventTitleCreateUpominka"></span></h4>
+                </div>
+                
+                <div class="modal-body">  
+                    <form id="upominkaform"> 
+                    <div class="form-group">
+                       <label for="nazevupominky">Název upomínky</label>
+                       <input type="text" class="form-control" name="nazevupominky" id="nazevupominky"/>
+                    </div>
+                    <div class="form-group">
+                       <label for="dulezitostupominky">Důležitost</label>
+                       <input type="number" min="1" max="100" class="form-control" name="dulezitostupominky" id="dulezitostupominky"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="datumupominka">Datum</label>
+                        <input type="datetime-local" name="datumupominka" class="form-control" id="datumupominka">
+                    </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="createbuttonupominka" class="btn btn-primary" data-dismiss="modal">Vytvořit</button>
+                    <button type="button" id="closemodalcreateupominka" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
                 
             </div>
@@ -242,17 +307,16 @@ max-height: 490px; ">
                     success: function(data) {
                         $.each(data, function(i, v) {
                             events.push({
-                                description: v.textpoznamky,
+                                title: v.textPoznamky,
                                 start: v.datum,
-                                color: "yellow",
+                                color: "orange",
                                 id: v.id
                             });
                             if (currType == typeOfEvent.Poznamka) {
                                 var d = new Date(v.datum);
                                 d = d.toLocaleString();
-
                                 var n = document.createElement("h4");
-                                n.innerHTML = v.textpoznamky;
+                                n.innerHTML = v.textPoznamky;
 
                                 var dat = document.createElement("h6");
                                 dat.innerHTML = d;
@@ -276,11 +340,54 @@ max-height: 490px; ">
                         alert('failed');
                     }
                 });
+                $.ajax({
+                    type: "GET",
+                    url: "/api/upominka",
+                    success: function(data) {
+                        $.each(data, function(i, v) {
+                            events.push({
+                                title: v.nazevUpominky,
+                                start: v.datum,
+                                color: "red",
+                                id: v.id
+                            });
+                            if (currType == typeOfEvent.Upominka) {
+                                var d = new Date(v.datum);
+                                d = d.toLocaleString();
+                                var n = document.createElement("h4");
+                                n.innerHTML = v.nazevUpominky;
+
+                                var dat = document.createElement("h6");
+                                dat.innerHTML = d;
+
+                                
+                                var dul = document.createElement("h4");
+                                dul.innerHTML = v.dulezitost;
+
+
+                                var div = document.createElement("div");
+                                div.className = 'upominka';
+                                div.id = v.id;
+                                var documentFragment = document.createDocumentFragment();
+                                documentFragment.appendChild(div);
+                                div.appendChild(n);
+                                div.appendChild(dul);
+                                div.appendChild(dat);
+                                $("#kocourek").append(div);
+                            }
+
+                        })
+                        GenerateCalendar(events);
+
+                    },
+                    error: function(error) {
+                        alert('failed');
+                    }
+                });
 
             }
             
             fetchData();
-            GenerateCalendar(events);
 
             $('.list-group').on('click','> li', function(e) {
                var $this = $(this);
@@ -303,11 +410,13 @@ max-height: 490px; ">
             });
             
 
-            $('#closemodal').click(function() {
+            $('#closemodal, #closemodalpoznamka, #closemodalupominka').click(function() {
                 $('#myModalUdalost').modal('hide');
+                $('#myModalPoznamka').modal('hide');
+                $('#myModalUpominka').modal('hide');
                 currEvent = null;
             });
-            $('#closemodalcreate, #closemodalcreatepoznamka, #closemodalupominka').click(function() {
+            $('#closemodalcreate, #closemodalcreatepoznamka, #closemodalcreateupominka').click(function() {
                 $('#myModalUdalostCreate').modal('hide');
                 $('#myModalPoznamkaCreate').modal('hide');
                 $('#myModalUpominkaCreate').modal('hide');
@@ -323,12 +432,23 @@ max-height: 490px; ">
                 $('#myModalUdalost').modal('show');
             });
 
+            $(document).on('click', ".poznamka", function(event){
+                currEvent = event.currentTarget.id;
+                var poznamka = events.find(({id}) => id == currEvent);
+                $('textarea[name="textpoznamkyupdate"]').val(poznamka.title);
+                $('input[name="datumpoznamkaupdate"]').val(moment(poznamka.start).format('YYYY-MM-DD HH:mm'));
+                $('#myModalPoznamka').modal('show');
+            });
+
+
+
+        //edit udalost
         $("#editbutton").click(function (e) {   
             var udalost = JSON.stringify({
                 'Nazev': $('input[name="nazevudalostiupdate"]').val(),
                 'Popis': $('textarea[name="popisudalostiupdate"]').val(),
-                'datumodudalost': $('input[name="datumodudalostupdateudalost"]').val(),
-                'datumdoudalost': $('input[name="datumdoudalostupdateudalost"]').val()    
+                'datumod': $('input[name="datumodudalostupdateudalost"]').val(),
+                'datumdo': $('input[name="datumdoudalostupdateudalost"]').val()    
             });
  
             $.ajax({   
@@ -348,14 +468,67 @@ max-height: 490px; ">
                    console.log('Error in Operation');
                 }
             });   
+        });
+
+        //edit poznamka
+        $("#editbuttonpoznamka").click(function (e) {   
+            var poznamka = JSON.stringify({
+                'textPoznamky': $('textarea[name="textpoznamkyupdate"]').val(),
+                'datum': $('input[name="datumpoznamkaupdate"]').val(),
+            });
+ 
+            $.ajax({   
+                url: "/api/poznamka/" + currEvent,   
+                type: "PUT", 
+                contentType: 'application/json',   
+                data: poznamka,
+                success: function (data, textStatus, xhr) {
+                    $('#kocourek').empty();
+                    $('#myModalPoznamka').modal('hide');
+                    $('#calender').fullCalendar({ 
+                        events: [] 
+                    })
+                   fetchData();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                   console.log('Error in Operation');
+                }
+            });   
+        }); 
+        //edit upominka
+        $("#editbuttonupominka").click(function (e) {   
+            var upominka = JSON.stringify({
+                'NazevUpominky': $('input[name="nazevupominkyupdate"]').val(),
+                'Dulezitost': $('input[name="dulezitostupominkyupdate"]').val(),
+                'Datum': $('input[name="datumupominkaupdate"]').val()
+            });
+ 
+            $.ajax({   
+                url: "/api/upominka/" + currEvent,   
+                type: "PUT", 
+                contentType: 'application/json',   
+                data: upominka,
+                success: function (data, textStatus, xhr) {
+                    $('#kocourek').empty();
+                    $('#myModalUpominka').modal('hide');
+                    $('#calender').fullCalendar({ 
+                        events: [] 
+                    })
+                   fetchData();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                   console.log('Error in Operation');
+                }
+            });   
         }); 
 
+        //create udalost
         $("#createbutton").click(function (e) {   
             var udalost = JSON.stringify({
                 'Nazev': $('input[name="nazevudalosti"]').val(),
                 'Popis': $('textarea[name="popisudalosti"]').val(),
-                'datumodudalost': $('input[name="datumodudalost"]').val(),
-                'datumdoudalost': $('input[name="datumdoudalost"]').val()    
+                'datumod': $('input[name="datumodudalost"]').val(),
+                'datumdo': $('input[name="datumdoudalost"]').val()    
             });
  
             $.ajax({   
@@ -376,7 +549,58 @@ max-height: 490px; ">
                 }
             });   
         }); 
-
+        //create poznamka
+        $("#createbuttonpoznamka").click(function (e) {   
+            var poznamka = JSON.stringify({
+                'TextPoznamky': $('textarea[name="textpoznamky"]').val(),
+                'Datum': $('input[name="datumpoznamka"]').val()
+            });
+ 
+            $.ajax({   
+                url: "/api/poznamka",   
+                type: "POST", 
+                contentType: 'application/json',   
+                data: poznamka,
+                success: function (data, textStatus, xhr) {
+                    $('#kocourek').empty();
+                    $('#myModalPoznamkaCreate').modal('hide');
+                    $('#calender').fullCalendar({ 
+                        events: [] 
+                    })
+                   fetchData();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                   console.log('Error in Operation');
+                }
+            });
+        }); 
+        //create upominka
+        $("#createbuttonupominka").click(function (e) {   
+            var upominka = JSON.stringify({
+                'NazevUpominky': $('input[name="nazevupominky"]').val(),
+                'Dulezitost': $('input[name="dulezitostupominky"]').val(),
+                'Datum': $('input[name="datumupominka"]').val()
+            });
+ 
+            $.ajax({   
+                url: "/api/upominka",   
+                type: "POST", 
+                contentType: 'application/json',   
+                data: upominka,
+                success: function (data, textStatus, xhr) {
+                    $('#kocourek').empty();
+                    $('#myModalUpominkaCreate').modal('hide');
+                    $('#calender').fullCalendar({ 
+                        events: [] 
+                    })
+                   fetchData();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                   console.log('Error in Operation');
+                }
+            });
+        }); 
+        //delete udalost
         $("#deletebutton").click(function (e) {   
             $.ajax({   
                 url: "/api/udalost/" + currEvent,   
@@ -386,6 +610,48 @@ max-height: 490px; ">
                 success: function (data, textStatus, xhr) {
                     $('#kocourek').empty();
                     $('#myModalUdalost').modal('hide');
+                    $('#calender').fullCalendar({ 
+                        events: [] 
+                    })
+                   fetchData();
+                   
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                   console.log('Error in Operation');
+                }
+            });   
+        }); 
+        //delete poznamka
+        $("#deletebuttonpoznamka").click(function (e) {   
+            $.ajax({   
+                url: "/api/poznamka/" + currEvent,   
+                type: "DELETE", 
+                contentType: 'application/json',   
+                data: currEvent,
+                success: function (data, textStatus, xhr) {
+                    $('#kocourek').empty();
+                    $('#myModalPoznamka').modal('hide');
+                    $('#calender').fullCalendar({ 
+                        events: [] 
+                    })
+                   fetchData();
+                   
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                   console.log('Error in Operation');
+                }
+            });   
+        }); 
+        //delete upominka
+        $("#deletebuttonupominka").click(function (e) {   
+            $.ajax({   
+                url: "/api/upominka/" + currEvent,   
+                type: "DELETE", 
+                contentType: 'application/json',   
+                data: currEvent,
+                success: function (data, textStatus, xhr) {
+                    $('#kocourek').empty();
+                    $('#myModalUpominka').modal('hide');
                     $('#calender').fullCalendar({ 
                         events: [] 
                     })
@@ -430,16 +696,19 @@ max-height: 490px; ">
                                 currEvent = calEvent.id;
                                 $('#myModalUdalost').modal('show');
                                 break;
-                            case "yellow": 
-                                $('#eventTitle').text("Upravit událost pro datum " + calEvent.start.format("DD.MM.YYYY") + " - " + calEvent.end.format("DD.MM.YYYY"));
-                                $('input[name="nazevudalostiupdate"]').val(calEvent.title);
-                                $('textarea[name="popisudalostiupdate"]').val(calEvent.description);
-                                $('input[name="datumodudalostupdateudalost"]').val(moment(calEvent.start).format('YYYY-MM-DD HH:MM'));
-                                $('input[name="datumdoudalostupdateudalost"]').val(moment(calEvent.end).format('YYYY-MM-DD HH:MM'));  
+                            case "orange": 
+                                $('#eventTitlePoznamka').text("Upravit poznámku pro datum " + calEvent.start.format("DD.MM.YYYY"));
+                                $('textarea[name="textpoznamkyupdate"]').val(calEvent.title);
+                                $('input[name="datumpoznamkaupdate"]').val(moment(calEvent.start).format('YYYY-MM-DD HH:MM'));
                                 currEvent = calEvent.id;
-                                $('#myModalUdalost').modal('show');
+                                $('#myModalPoznamka').modal('show');
                                 break;
-                            case typeOfEvent.Upominka: alert('upominka');
+                            case "red":
+                                $('#eventTitlePoznamka').text("Upravit upomínku pro datum " + calEvent.start.format("DD.MM.YYYY"));
+                                $('input[name="nazevupominkyupdate"]').val(calEvent.title);
+                                $('input[name="datumupominkaupdate"]').val(moment(calEvent.start).format('YYYY-MM-DD HH:MM'));
+                                currEvent = calEvent.id;
+                                $('#myModalUpominka').modal('show');
                                 break;
                         }
 
@@ -451,22 +720,18 @@ max-height: 490px; ">
                                 $('input[name="datumodudalost"]').val(moment(date).format('YYYY-MM-DD 00:00'));
                                 $('input[name="datumdoudalost"]').val(moment(date).format('YYYY-MM-DD 23:59'));
                                 $('#eventTitleCreate').text("Vytvořit novou událost pro datum " + date.format("DD.MM.YYYY"));
-                                var $description = $('<div/>');
-                                $description.append($('<p/>').html('<b>Start:</b>' + date.format("DD-MMM-YYYY HH:mm a")));
-                                $('#myModalUdalostCreate #pDetailsCreate').empty().html($description);
 
                                 $('#myModalUdalostCreate').modal('show');
                                 break;
                             case typeOfEvent.Poznamka:
                                 $('input[name="datumpoznamka"]').val(moment(date).format('YYYY-MM-DD 00:00'));
                                 $('#eventTitleCreatePoznamka').text("Vytvořit novou poznámku pro datum " + date.format("DD.MM.YYYY"));
-                                var $description = $('<div/>');
-                                $description.append($('<p/>').html('<b>Start:</b>' + date.format("DD-MMM-YYYY HH:mm a")));
-                                $('#myModalUdalostCreatePoznamka #pDetailsCreate').empty().html($description);
-
                                 $('#myModalPoznamkaCreate').modal('show');
                                 break;
-                            case typeOfEvent.Upominka: alert('upominka');
+                            case typeOfEvent.Upominka:
+                                $('input[name="datumupominka"]').val(moment(date).format('YYYY-MM-DD 00:00'));
+                                $('#eventTitleCreateUpominka').text("Vytvořit novou upomínku pro datum " + date.format("DD.MM.YYYY"));
+                                $('#myModalUpominkaCreate').modal('show');
                                 break;
                         }
                         
